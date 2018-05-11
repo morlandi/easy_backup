@@ -241,7 +241,6 @@ def main():
     logger.info('Target folder: "%s"' % target_folder)
 
     if get_config().get_item_as_bool('data_folders', 'enabled', False):
-        import ipdb; ipdb.set_trace()
         backup_data_folders(timestamp, target_folder)
 
     if get_config().get_item_as_bool('postgresql', 'enabled', False):
