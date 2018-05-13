@@ -110,11 +110,11 @@ config_singleton = Configuration()
 DEFAULT_CONFIG_FILE = """
 
 [general]
-mount_command=mount.cifs -o user=uXXXXXX,pass=YYYYYYYYYYYYYYYY //uXXXXXX.your-storagebox.de/backup /mnt/backup
+mount_command=mount.cifs -o user=uXXXXXX,pass=YYYYYYYYYYYYYYYY //uXXXXXX.your-storagebox/backup /mnt/backup
 umount_command=umount /mnt/backup
 mailto=
 target_root=/mnt/backup/backups/{hostname}
-target_subfolder=./daily
+target_subfolder=daily
 
 [data_folders]
 enabled=False
@@ -133,13 +133,13 @@ exclude_2=db_wrong_2
 [mysql]
 enabled=False
 root_user: root
-root_password: f56b7bea8c084d14
+root_password: password
 
 [rotation]
 enabled=False
-daily=./daily
-weekly=./weekly
-monthly=./monthly
-yearly=./yearly
-quarantine=./quarantine
+daily=daily
+weekly=weekly
+monthly=monthly
+yearly=yearly
+quarantine=quarantine
 """

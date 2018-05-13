@@ -11,6 +11,20 @@ Installation
     pip install git+https://github.com/morlandi/easy_backup
 
 
+Purposes
+--------
+
+- new backup files will be saved into the specified target folder
+- an optional "mount" command is executed at the beginning
+- an optional "umount" command is executed at the end
+- each folder listed in the "data_folders" section is saved in a new .tar.gz archive
+- all postgres databases (unless explicitly excluded) are dumped to new .gz archives
+- postgresql "vacuumdb" command is optionally applyed
+- all mysql databases (unless explicitly excluded) are dumped to new .gz archives
+- after all new backups have been saved to the "daily" folder, a rotation procedure
+  can be applyied as further detailed below
+
+
 Sample usage
 ------------
 
@@ -30,25 +44,66 @@ Sample usage
       --version             show program's version number and exit
 
 
+Config file
+-----------
 
-rotate_files
-------------
+A sample config file "easy_backup.conf" is automatically created on first run.
+
+You should revise it to supply appropriate values.
+
+::
+
+  [general]
+  mount_command=mount.cifs -o user=uXXXXXX,pass=YYYYYYYYYYYYYYYY //uXXXXXX.your-storagebox/backup /mnt/backup
+  umount_command=umount /mnt/backup
+  mailto=
+  target_root=/mnt/backup/backups/{hostname}
+  target_subfolder=daily
+
+  [data_folders]
+  enabled=False
+  include_1=/etc
+  include_2=/home/*/www/
+  include_3=/home/*/public/media
+  exclude_1=/home/baduser/public/media
+
+  [postgresql]
+  enabled=True
+  root_user=postgres
+  vacuumdb=True
+  exclude_1=db_wrong_1
+  exclude_2=db_wrong_2
+
+  [mysql]
+  enabled=False
+  root_user: root
+  root_password: password
+
+  [rotation]
+  enabled=False
+  daily=daily
+  weekly=weekly
+  monthly=monthly
+  yearly=yearly
+  quarantine=quarantine
 
 
-This utility script is used to organize backup files with the following purposes:
+File rotation
+-------------
+
+When rotation is activated, a specific procedure is run after backup completion,
+in order to organize backup files with the following purposes:
 
 - limit the overall disk space used
 - provide a significant history depth
-
-New backup files should be added to the './daily' folder before executing the script.
 
 Backup files are organized according to the following schema::
 
     .
     +-- daily       ... most recent files
-    +-- weekly      ... files older than one week; only monday and dated 1-st day of month are preserved
-    +-- monthly     ... files older than one month (dated 1-st day of month)
-    +-- yearly      ... files older than one year and date 1-st january
+    +-- weekly      ... files older than one week; only monday and 1-st day of month dated files are preserved
+    +-- monthly     ... files older than one month; only 1-st day of month dated files are preserved
+    +-- yearly      ... files older than one year and dated 1-st january
     +-- quarantine  ... the files to get rid of
 
 Redundant files are kept in the quarantine folder for 1 month.

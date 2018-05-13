@@ -102,12 +102,17 @@ def assure_path_exists(path):
     return True
 
 
-def get_target_folder():
+def get_target_folder(include_target_subfolder):
     config = get_config()
-    folder = os.path.abspath(os.path.join(
-        config.get_item('general', 'target_root'),
-        config.get_item('general', 'target_subfolder'),
-    ))
+    if include_target_subfolder:
+        folder = os.path.abspath(os.path.join(
+            config.get_item('general', 'target_root'),
+            config.get_item('general', 'target_subfolder'),
+        ))
+    else:
+        folder = os.path.abspath(
+            config.get_item('general', 'target_root')
+        )
     while "{hostname}" in folder:
         folder = folder.replace("{hostname}", socket.gethostname())
     return folder

@@ -12,6 +12,7 @@ import subprocess
 
 from .args import get_args, set_args
 from .configuration import get_config
+from .rotate_files import rotate_all
 from . import utils
 
 
@@ -192,6 +193,20 @@ def backup_mysql_databases(timestamp, target_folder):
 
 ################################################################################
 
+def rotate_backups():
+    logger.info('*** rotate_backups() begin ...')
+    rotate_all(
+        target_folder=utils.get_target_folder(include_target_subfolder=False),
+        daily=get_config().get_item('rotation', 'daily'),
+        weekly=get_config().get_item('rotation', 'weekly'),
+        monthly=get_config().get_item('rotation', 'monthly'),
+        yearly=get_config().get_item('rotation', 'yearly'),
+        quarantine=get_config().get_item('rotation', 'quarantine'),
+    )
+    logger.info('*** rotate_backups() end')
+
+################################################################################
+
 class CommandLineParser(argparse.ArgumentParser):
 
     def error(self, message):
@@ -239,7 +254,7 @@ def main():
     # Retrieve timestamp and target folder
     timestamp = utils.timestamp()
     logger.info('Timestamp: "%s"' % utils.timestamp_to_string(timestamp))
-    target_folder = utils.get_target_folder()
+    target_folder = utils.get_target_folder(include_target_subfolder=True)
     if not utils.assure_path_exists(target_folder):
         utils.fail('Target folder "%s" not found' % target_folder)
     logger.info('Target folder: "%s"' % target_folder)
@@ -252,6 +267,9 @@ def main():
 
     if get_config().get_item_as_bool('mysql', 'enabled', False):
         backup_mysql_databases(timestamp, target_folder)
+
+    if get_config().get_item_as_bool('rotation', 'enabled', False):
+        rotate_backups()
 
     utils.umount()
 
