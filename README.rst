@@ -19,10 +19,10 @@ Purposes
 - an optional "umount" command is executed at the end
 - each folder listed in the "data_folders" section is saved in a new .tar.gz archive
 - all postgres databases (unless explicitly excluded) are dumped to new .gz archives
-- postgresql "vacuumdb" command is optionally applyed
+- postgresql "vacuumdb" command is optionally applied
 - all mysql databases (unless explicitly excluded) are dumped to new .gz archives
 - after all new backups have been saved to the "daily" folder, a rotation procedure
-  can be applyied as further detailed below
+  can be applied as further detailed below
 
 
 Sample usage

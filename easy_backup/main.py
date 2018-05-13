@@ -242,9 +242,10 @@ def main():
 
     # Setup logger
     utils.setup_logger(logger, args.verbosity)
+    logger.info("")
 
     # Read config. file
-    config_filename = args.config.strip()
+    config_filename = os.path.abspath(args.config.strip())
     get_config().read_config_file(config_filename)
 
     utils.umount()
