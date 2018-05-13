@@ -14,11 +14,11 @@ def run_command(command):
     success = True
     #interactive = not args.quiet
     if get_args().dry_run:
-        print("\x1b[1;37;40m" + command + "\x1b[0m")
+        sys.stderr.write("\x1b[1;37;40m" + command + "\x1b[0m\n")
     else:
         # if interactive and not query_yes_no("Proceed ?"):
         #     raise Exception("Interrupted by user")
-        logger.info('Run command: "' + command + '"')
+        logger.debug('Run command: "' + command + '"')
         rc = os.system(command)
         if rc != 0:
             logger.error('COMMAND FAILED: "' + command + '"')

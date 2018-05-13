@@ -61,7 +61,7 @@ def backup_data_folders(timestamp, target_folder):
             folder.replace('/', '.').strip('.').lower()
         ) + '.tgz'
         logger.info('Backing up data folder "%s"' % folder)
-        logger.info('Target file: "%s"' % target_file)
+        logger.debug('Target file: "%s"' % target_file)
 
         # split folder into parent_folder + subfolder;
         # Example:
@@ -115,6 +115,8 @@ def backup_postgresql_databases(timestamp, target_folder):
 
     # list databases
     databases = list_postgresql_databases()
+    excluded = [value for key, value in get_config().items("postgresql") if key.startswith('exclude_')]
+    databases = [d for d in databases if d not in excluded]
 
     # dump databases
     dump_command = build_postgresql_command('pg_dump')
@@ -128,7 +130,7 @@ def backup_postgresql_databases(timestamp, target_folder):
             database.lower()
         ) + '.postgresql.gz'
         logger.info('Backing up postgresql database "%s"' % database)
-        logger.info('Target file: "%s"' % target_file)
+        logger.debug('Target file: "%s"' % target_file)
 
         command = '%s %s | gzip > "%s"' % (dump_command, database, target_file)
         utils.run_command(command)
@@ -167,6 +169,8 @@ def backup_mysql_databases(timestamp, target_folder):
 
     # list databases
     databases = list_mysql_databases()
+    excluded = [value for key, value in get_config().items("mysql") if key.startswith('exclude_')]
+    databases = [d for d in databases if d not in excluded]
 
     # dump databases
     dump_command = build_mysql_command('mysqldump')
@@ -179,7 +183,7 @@ def backup_mysql_databases(timestamp, target_folder):
             database.lower()
         ) + '.mysql.gz'
         logger.info('Backing up mysql database "%s"' % database)
-        logger.info('Target file: "%s"' % target_file)
+        logger.debug('Target file: "%s"' % target_file)
 
         command = '%s %s | gzip > "%s"' % (dump_command, database, target_file)
         utils.run_command(command)
@@ -214,7 +218,7 @@ def main():
     )
     parser.add_argument('-c', '--config', metavar='config_filename', default=default_config_filename,
         help="config. filename (default = \"%s\")" % default_config_filename)
-    parser.add_argument('-v', '--verbosity', type=int, choices=[0, 1, 2, 3], default=2, help="Verbosity level. (default: 2)")
+    parser.add_argument('-v', '--verbosity', type=int, choices=[0, 1, 2, 3], default=1, help="Verbosity level. (default: 2)")
     parser.add_argument('--dry-run', '-d', action='store_true', help="simulate actions")
     parser.add_argument('--version', action='version', version='%(prog)s ' + utils.get_version())
 

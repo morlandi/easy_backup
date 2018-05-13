@@ -116,22 +116,24 @@ mailto=
 target_root=/mnt/backup/backups/{hostname}
 target_subfolder=./daily
 
-[postgresql]
-enabled=True
-root_user=postgres
-vacuumdb=True
-
-[mysql]
-enabled=False
-root_user: root
-root_password: f56b7bea8c084d14
-
 [data_folders]
 enabled=False
 include_1=/etc
 include_2=/home/*/www/
 include_3=/home/*/public/media
 exclude_1=/home/baduser/public/media
+
+[postgresql]
+enabled=True
+root_user=postgres
+vacuumdb=True
+exclude_1=db_wrong_1
+exclude_2=db_wrong_2
+
+[mysql]
+enabled=False
+root_user: root
+root_password: f56b7bea8c084d14
 
 [rotation]
 enabled=False
