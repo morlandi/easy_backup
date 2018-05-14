@@ -126,10 +126,12 @@ def backup_postgresql_databases(timestamp, target_folder):
 
         logger.debug(database)
 
-        # es: "/target_path/2017-01-01_01-01-01__demo1.postgresql.gz"
-        target_file = utils.output_filepath(target_folder, timestamp,
-            database.lower()
-        ) + '.postgresql.gz'
+        # es: "/target_path/2017-01-01_01-01-01__postgresql.demo1.gz"
+        target_file = utils.output_filepath(
+            target_folder,
+            timestamp,
+            'postgresql.' + database.lower() + '.gz'
+        )
         logger.info('Backing up postgresql database "%s"' % database)
         logger.debug('Target file: "%s"' % target_file)
 
@@ -179,10 +181,13 @@ def backup_mysql_databases(timestamp, target_folder):
 
         logger.debug(database)
 
-        # es: "/target_path/2017-01-01_01-01-01__demo1.mysql.gz"
-        target_file = utils.output_filepath(target_folder, timestamp,
-            database.lower()
-        ) + '.mysql.gz'
+        # es: "/target_path/2017-01-01_01-01-01__mysql.demo1.gz"
+        target_file = utils.output_filepath(
+            target_folder,
+            timestamp,
+            'mysql.' + database.lower() + '.gz'
+        )
+
         logger.info('Backing up mysql database "%s"' % database)
         logger.debug('Target file: "%s"' % target_file)
 
