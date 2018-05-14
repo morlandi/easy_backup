@@ -89,9 +89,11 @@ class DatedFile(object):
         Move dated file to quarantine.
         Target filename will be prepended with current date,
         so we always know when this happened.
+
+        If no quarantine folder has been configured, just delete the file.
         """
+        assert(self.is_dated())
         if quarantine_folder:
-            assert(self.is_dated())
             target_filename = "%s_____%s" % (datetime.date.today().strftime('%Y-%m-%d'), self.filename)
             logger.info('File "%s" ...' % self.filename)
             logger.debug('Moving file "%s" from "%s" to "%s"' % (self.filename, source_folder, quarantine_folder))
@@ -202,6 +204,8 @@ def rotate_all(target_folder, daily, weekly, monthly, yearly, quarantine):
                 if not os.path.exists(folder):
                     logger.info('Creating folder "%s"' % folder)
                     os.makedirs(folder)
+        else:
+            raise Exception('Daily folder "%s" not found in "%s"' % (daily, target_folder))
 
         # Rotate files
         errors += rotate_daily(daily, weekly, quarantine)
