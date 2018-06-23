@@ -87,18 +87,17 @@ def backup_data_folders(timestamp, target_folder):
 def backup_postgresql_databases(timestamp, target_folder):
 
     def build_postgresql_command(command):
-        command = 'sudo -u %s %s' % (
+        return 'sudo -u %s %s' % (
             get_config().get_item('postgresql', 'root_user'),
             command,
         )
-        return str(command)
 
     def list_postgresql_databases():
         try:
             #command = 'sudo -u %s psql -c "SELECT datname FROM pg_database" 2>/dev/null | sed -n 3,/\eof/p | grep -v "rows)"' % POSTGRESQL_USER
             #command = 'sudo -u %s psql -c "SELECT datname FROM pg_database"' % POSTGRESQL_USER
             command = build_postgresql_command('psql')
-            output = subprocess.check_output(command.split() + ['-c', "SELECT datname FROM pg_database"])
+            output = str(subprocess.check_output(command.split() + ['-c', "SELECT datname FROM pg_database"]))
             logger.debug(output)
             # sample output:
             # '  datname  \n-----------\n template1\n template0\n postgres\n(3 rows)\n\n'
@@ -149,17 +148,16 @@ def backup_postgresql_databases(timestamp, target_folder):
 def backup_mysql_databases(timestamp, target_folder):
 
     def build_mysql_command(command):
-        command = '%s --host localhost --user %s --password="%s"' % (
+        return '%s --host localhost --user %s --password="%s"' % (
             command,
             get_config().get_item('mysql', 'root_user'),
             get_config().get_item('mysql', 'root_password'),
         )
-        return str(command)
 
     def list_mysql_databases():
         try:
             mysql_command = build_mysql_command('mysql')
-            output = subprocess.check_output(mysql_command.split() + ['-e', "show databases"])
+            output = str(subprocess.check_output(mysql_command.split() + ['-e', "show databases"]))
             logger.debug(output)
             # sample output:
             # 'Database\ninformation_schema\ndemo1\ndemo2\nmysql\nperformance_schema\nsys\n'
