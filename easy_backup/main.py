@@ -87,10 +87,11 @@ def backup_data_folders(timestamp, target_folder):
 def backup_postgresql_databases(timestamp, target_folder):
 
     def build_postgresql_command(command):
-        return 'sudo -u %s %s' % (
+        command = 'sudo -u %s %s' % (
             get_config().get_item('postgresql', 'root_user'),
             command,
         )
+        return str(command)
 
     def list_postgresql_databases():
         try:
@@ -148,11 +149,12 @@ def backup_postgresql_databases(timestamp, target_folder):
 def backup_mysql_databases(timestamp, target_folder):
 
     def build_mysql_command(command):
-        return '%s --host localhost --user %s --password="%s"' % (
+        command = '%s --host localhost --user %s --password="%s"' % (
             command,
             get_config().get_item('mysql', 'root_user'),
             get_config().get_item('mysql', 'root_password'),
         )
+        return str(command)
 
     def list_mysql_databases():
         try:

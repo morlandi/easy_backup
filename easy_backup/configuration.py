@@ -132,8 +132,8 @@ exclude_2=db_wrong_2
 
 [mysql]
 enabled=False
-root_user: root
-root_password: password
+root_user=root
+root_password=
 
 [rotation]
 enabled=False
