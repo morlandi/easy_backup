@@ -103,7 +103,10 @@ def backup_postgresql_databases(timestamp, target_folder):
             logger.debug(output)
             # sample output:
             # '  datname  \n-----------\n template1\n template0\n postgres\n(3 rows)\n\n'
-            names = [str(name.decode("utf-8")) for name in output.split()]
+            try:
+                names = [str(name.decode("utf-8")) for name in output.split()]
+            except:
+                names = output.split()
             databases = [
                 name for name in names
                 if name != 'datname' and '---' not in name and '(' not in name and ')' not in name
