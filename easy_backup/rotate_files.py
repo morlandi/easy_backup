@@ -172,15 +172,15 @@ def rotate_monthly(MONTHLY, YEARLY, QUARANTINE):
     return errors
 
 
-def cleanup_quarantine(QUARANTINE):
+def cleanup_quarantine(QUARANTINE, quarantine_max_age):
     if QUARANTINE:
-        logger.info('* Cleanup quarantine ...')
-        files = collect_dated_files(QUARANTINE, 31)
+        logger.info('* Cleanup quarantine ... (max age: %d)' % quarantine_max_age)
+        files = collect_dated_files(QUARANTINE, quarantine_max_age)
         for file in files:
             file.destroy(QUARANTINE)
 
 
-def rotate_all(target_folder, daily, weekly, monthly, yearly, quarantine):
+def rotate_all(target_folder, daily, weekly, monthly, yearly, quarantine, quarantine_max_age):
 
     # remember cwd
     original_cwd = os.getcwd()
@@ -212,7 +212,7 @@ def rotate_all(target_folder, daily, weekly, monthly, yearly, quarantine):
         errors += rotate_weekly(weekly, monthly, quarantine)
         errors += rotate_monthly(monthly, yearly, quarantine)
 
-        cleanup_quarantine(quarantine)
+        cleanup_quarantine(quarantine, quarantine_max_age)
 
     except Exception as e:
         logger.error(str(e), exc_info=True)

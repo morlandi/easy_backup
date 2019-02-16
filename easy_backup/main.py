@@ -214,6 +214,7 @@ def rotate_backups():
         monthly=get_config().get_item('rotation', 'monthly'),
         yearly=get_config().get_item('rotation', 'yearly'),
         quarantine=get_config().get_item('rotation', 'quarantine'),
+        quarantine_max_age=int(get_config().get_item('rotation', 'quarantine_max_age', '31')),
     )
     logger.info('*** rotate_backups() end')
 
@@ -259,6 +260,7 @@ def main():
     # Read config. file
     config_filename = os.path.abspath(args.config.strip())
     get_config().read_config_file(config_filename)
+
 
     utils.umount()
     if not utils.mount(args):

@@ -103,7 +103,6 @@ class Configuration(ConfigParser):
                 sys.stdout.write("Please respond with 'yes' or 'no' (or 'y' or 'n').\n")
 
 
-
 config_singleton = Configuration()
 
 
@@ -142,4 +141,5 @@ weekly=weekly
 monthly=monthly
 yearly=yearly
 quarantine=quarantine
+quarantine_max_age=31
 """
