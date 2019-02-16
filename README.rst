@@ -86,6 +86,7 @@ You should revise it to supply appropriate values.
   monthly=monthly
   yearly=yearly
   quarantine=quarantine
+  quarantine_max_age=7
 
 
 File rotation

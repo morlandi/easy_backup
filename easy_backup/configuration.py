@@ -141,5 +141,5 @@ weekly=weekly
 monthly=monthly
 yearly=yearly
 quarantine=quarantine
-quarantine_max_age=31
+quarantine_max_age=7
 """
