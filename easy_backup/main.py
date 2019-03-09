@@ -18,6 +18,7 @@ from . import utils
 
 logger = logging.getLogger("easy_backup")
 
+
 ################################################################################
 
 def backup_data_folders(timestamp, target_folder):
@@ -81,6 +82,7 @@ def backup_data_folders(timestamp, target_folder):
         utils.run_command(command)
 
     logger.info('*** backup_data_folders() end')
+
 
 ################################################################################
 
@@ -148,6 +150,7 @@ def backup_postgresql_databases(timestamp, target_folder):
 
     logger.info('*** backup_postgresql_databases() end')
 
+
 ################################################################################
 
 def backup_mysql_databases(timestamp, target_folder):
@@ -203,9 +206,10 @@ def backup_mysql_databases(timestamp, target_folder):
 
     logger.info('*** backup_mysql_databases() end')
 
+
 ################################################################################
 
-def rotate_backups():
+def rotate_backups(dry_run):
     logger.info('*** rotate_backups() begin ...')
     rotate_all(
         target_folder=utils.get_target_folder(include_target_subfolder=False),
@@ -214,9 +218,11 @@ def rotate_backups():
         monthly=get_config().get_item('rotation', 'monthly'),
         yearly=get_config().get_item('rotation', 'yearly'),
         quarantine=get_config().get_item('rotation', 'quarantine'),
-        quarantine_max_age=int(get_config().get_item('rotation', 'quarantine_max_age', '31')),
+        quarantine_max_age=int(get_config().get_item('rotation', 'quarantine_max_age', '7')),
+        dry_run=dry_run,
     )
     logger.info('*** rotate_backups() end')
+
 
 ################################################################################
 
@@ -241,8 +247,6 @@ def main():
     parser = CommandLineParser(
         description='Creates a timestamped backups for local databases and data folders, and optionally rotate previous backups',
         formatter_class=argparse.RawTextHelpFormatter,
-#         epilog="""Examples:
-# """,
     )
     parser.add_argument('-c', '--config', metavar='config_filename', default=default_config_filename,
         help="config. filename (default = \"%s\")" % default_config_filename)
@@ -260,7 +264,6 @@ def main():
     # Read config. file
     config_filename = os.path.abspath(args.config.strip())
     get_config().read_config_file(config_filename)
-
 
     utils.umount()
     if not utils.mount(args):
@@ -284,7 +287,7 @@ def main():
         backup_mysql_databases(timestamp, target_folder)
 
     if get_config().get_item_as_bool('rotation', 'enabled', False):
-        rotate_backups()
+        rotate_backups(get_args().dry_run)
 
     utils.umount()
 

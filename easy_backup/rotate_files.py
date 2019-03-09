@@ -2,6 +2,7 @@
 import os
 import logging
 import datetime
+import sys
 
 logger = logging.getLogger("easy_backup")
 
@@ -75,16 +76,23 @@ class DatedFile(object):
             return False
         return self.filedate.month == 1 and self.filedate.day == 1
 
-    def move_to(self, source_folder, target_folder):
+    def dry_run_message(self, message):
+        sys.stderr.write("\x1b[1;37;40m" + message + "\x1b[0m\n")
+
+    def move_to(self, source_folder, target_folder, dry_run):
         """
         Move dated file from source to target folder
         """
         assert(self.is_dated())
-        logger.info('File "%s" ...' % self.filename)
-        logger.debug('Moving file "%s" from "%s" to "%s"' % (self.filename, source_folder, target_folder))
-        os.rename(os.path.join(source_folder, self.filename), os.path.join(target_folder, self.filename))
+        message = 'Moving file "%s" from "%s" to "%s"' % (self.filename, source_folder, target_folder)
+        if dry_run:
+            self.dry_run_message(message)
+        else:
+            logger.info('File "%s" ...' % self.filename)
+            logger.debug(message)
+            os.rename(os.path.join(source_folder, self.filename), os.path.join(target_folder, self.filename))
 
-    def to_quarantine(self, source_folder, quarantine_folder):
+    def to_quarantine(self, source_folder, quarantine_folder, dry_run):
         """
         Move dated file to quarantine.
         Target filename will be prepended with current date,
@@ -95,18 +103,26 @@ class DatedFile(object):
         assert(self.is_dated())
         if quarantine_folder:
             target_filename = "%s_____%s" % (datetime.date.today().strftime('%Y-%m-%d'), self.filename)
-            logger.info('File "%s" ...' % self.filename)
-            logger.debug('Moving file "%s" from "%s" to "%s"' % (self.filename, source_folder, quarantine_folder))
-            os.rename(os.path.join(source_folder, self.filename), os.path.join(quarantine_folder, target_filename))
+            message = 'Moving file "%s" from "%s" to "%s"' % (self.filename, source_folder, quarantine_folder)
+            if dry_run:
+                self.dry_run_message(message)
+            else:
+                logger.info('File "%s" ...' % self.filename)
+                logger.debug(message)
+                os.rename(os.path.join(source_folder, self.filename), os.path.join(quarantine_folder, target_filename))
         else:
-            self.destroy(source_folder)
+            self.destroy(source_folder, dry_run)
 
-    def destroy(self, source_folder):
+    def destroy(self, source_folder, dry_run):
         """
         Remove the file.
         """
-        logger.info('Erasing file "%s" from "%s"' % (self.filename, source_folder))
-        os.unlink(os.path.join(source_folder, self.filename))
+        message = 'Erasing file "%s" from "%s"' % (self.filename, source_folder)
+        if dry_run:
+            self.dry_run_message(message)
+        else:
+            logger.info(message)
+            os.unlink(os.path.join(source_folder, self.filename))
 
 
 def collect_dated_files(source_folder, min_age):
@@ -121,7 +137,7 @@ def collect_dated_files(source_folder, min_age):
     return files
 
 
-def rotate_daily(DAILY, WEEKLY, QUARANTINE):
+def rotate_daily(DAILY, WEEKLY, QUARANTINE, dry_run):
     logger.info('* Rotating daily files ...')
     files = collect_dated_files(DAILY, 7)
     errors = 0
@@ -129,16 +145,16 @@ def rotate_daily(DAILY, WEEKLY, QUARANTINE):
         logger.debug(file_obj)
         try:
             if file_obj.fdow or file_obj.fdom:
-                file_obj.move_to(DAILY, WEEKLY)
+                file_obj.move_to(DAILY, WEEKLY, dry_run)
             else:
-                file_obj.to_quarantine(DAILY, QUARANTINE)
+                file_obj.to_quarantine(DAILY, QUARANTINE, dry_run)
         except Exception as e:
             logger.error(str(e), exc_info=True)
             errors += 1
     return errors
 
 
-def rotate_weekly(WEEKLY, MONTHLY, QUARANTINE):
+def rotate_weekly(WEEKLY, MONTHLY, QUARANTINE, dry_run):
     logger.info('* Rotating weekly files ...')
     files = collect_dated_files(WEEKLY, 31)
     errors = 0
@@ -146,16 +162,16 @@ def rotate_weekly(WEEKLY, MONTHLY, QUARANTINE):
         logger.debug(file_obj)
         try:
             if file_obj.fdom:
-                file_obj.move_to(WEEKLY, MONTHLY)
+                file_obj.move_to(WEEKLY, MONTHLY, dry_run)
             else:
-                file_obj.to_quarantine(WEEKLY, QUARANTINE)
+                file_obj.to_quarantine(WEEKLY, QUARANTINE, dry_run)
         except Exception as e:
             logger.error(str(e), exc_info=True)
             errors += 1
     return errors
 
 
-def rotate_monthly(MONTHLY, YEARLY, QUARANTINE):
+def rotate_monthly(MONTHLY, YEARLY, QUARANTINE, dry_run):
     logger.info('* Rotating monthly files ...')
     files = collect_dated_files(MONTHLY, 365)
     errors = 0
@@ -163,24 +179,24 @@ def rotate_monthly(MONTHLY, YEARLY, QUARANTINE):
         logger.debug(file_obj)
         try:
             if file_obj.fdoy:
-                file_obj.move_to(MONTHLY, YEARLY)
+                file_obj.move_to(MONTHLY, YEARLY, dry_run)
             else:
-                file_obj.to_quarantine(MONTHLY, QUARANTINE)
+                file_obj.to_quarantine(MONTHLY, QUARANTINE, dry_run)
         except Exception as e:
             logger.error(str(e), exc_info=True)
             errors += 1
     return errors
 
 
-def cleanup_quarantine(QUARANTINE, quarantine_max_age):
+def cleanup_quarantine(QUARANTINE, quarantine_max_age, dry_run):
     if QUARANTINE:
         logger.info('* Cleanup quarantine ... (max age: %d)' % quarantine_max_age)
         files = collect_dated_files(QUARANTINE, quarantine_max_age)
         for file in files:
-            file.destroy(QUARANTINE)
+            file.destroy(QUARANTINE, dry_run)
 
 
-def rotate_all(target_folder, daily, weekly, monthly, yearly, quarantine, quarantine_max_age):
+def rotate_all(target_folder, daily, weekly, monthly, yearly, quarantine, quarantine_max_age, dry_run):
 
     # remember cwd
     original_cwd = os.getcwd()
@@ -208,11 +224,11 @@ def rotate_all(target_folder, daily, weekly, monthly, yearly, quarantine, quaran
             raise Exception('Daily folder "%s" not found in "%s"' % (daily, target_folder))
 
         # Rotate files
-        errors += rotate_daily(daily, weekly, quarantine)
-        errors += rotate_weekly(weekly, monthly, quarantine)
-        errors += rotate_monthly(monthly, yearly, quarantine)
+        errors += rotate_daily(daily, weekly, quarantine, dry_run)
+        errors += rotate_weekly(weekly, monthly, quarantine, dry_run)
+        errors += rotate_monthly(monthly, yearly, quarantine, dry_run)
 
-        cleanup_quarantine(quarantine, quarantine_max_age)
+        cleanup_quarantine(quarantine, quarantine_max_age, dry_run)
 
     except Exception as e:
         logger.error(str(e), exc_info=True)
