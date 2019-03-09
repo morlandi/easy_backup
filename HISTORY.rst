@@ -3,6 +3,11 @@
 History
 =======
 
+v1.0.5
+------
+* consider dry_run flag
+* "run before" and "run after" scripts
+
 v1.0.4
 ------
 * set default value of "quarantine_max_age" to 7

@@ -234,6 +234,10 @@ class CommandLineParser(argparse.ArgumentParser):
         sys.exit(2)
 
 
+def run_script(script):
+    logger.info('Running script: "%s"' % script)
+
+
 def main():
 
     #
@@ -277,17 +281,31 @@ def main():
         utils.fail('Target folder "%s" not found' % target_folder)
     logger.info('Target folder: "%s"' % target_folder)
 
-    if get_config().get_item_as_bool('data_folders', 'enabled', False):
+    config = get_config()
+
+    if config.has_section('run_before'):
+        scripts = [value for key, value in get_config().items("run_before") if key.startswith('script_')]
+        for script in scripts:
+            logger.info('Running script: "%s"' % script)
+            utils.run_command(script)
+
+    if config.get_item_as_bool('data_folders', 'enabled', False):
         backup_data_folders(timestamp, target_folder)
 
-    if get_config().get_item_as_bool('postgresql', 'enabled', False):
+    if config.get_item_as_bool('postgresql', 'enabled', False):
         backup_postgresql_databases(timestamp, target_folder)
 
-    if get_config().get_item_as_bool('mysql', 'enabled', False):
+    if config.get_item_as_bool('mysql', 'enabled', False):
         backup_mysql_databases(timestamp, target_folder)
 
-    if get_config().get_item_as_bool('rotation', 'enabled', False):
+    if config.get_item_as_bool('rotation', 'enabled', False):
         rotate_backups(get_args().dry_run)
+
+    if config.has_section('run_after'):
+        scripts = [value for key, value in get_config().items("run_after") if key.startswith('script_')]
+        for script in scripts:
+            logger.info('Running script: "%s"' % script)
+            utils.run_command(script)
 
     utils.umount()
 

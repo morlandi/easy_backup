@@ -115,6 +115,14 @@ mailto=
 target_root=/mnt/backup/backups/{hostname}
 target_subfolder=daily
 
+#[run_before]
+#script_1=...
+#script_2=...
+
+#[run_after]
+#script_1=...
+#script_2=...
+
 [data_folders]
 enabled=False
 include_1=/etc
