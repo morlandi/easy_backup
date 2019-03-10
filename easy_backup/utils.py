@@ -4,6 +4,7 @@ import logging
 import datetime
 import time
 import socket
+import platform
 from .args import get_args
 from .configuration import get_config
 
@@ -50,7 +51,9 @@ def setup_logger(logger, verbosity):
 def get_version():
     try:
         import easy_backup
-        return easy_backup.__version__
+        version = easy_backup.__version__
+        version += " (python: %s)" % platform.python_version()
+        return version
     except:
         return '???'
 
