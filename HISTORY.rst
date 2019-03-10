@@ -3,6 +3,10 @@
 History
 =======
 
+v1.0.6
+------
+* print python version
+
 v1.0.5
 ------
 * consider dry_run flag
