@@ -3,6 +3,11 @@
 History
 =======
 
+v1.0.8
+------
+* update default config file
+* "enabled" item atted to "run_before" and "run_after" sections
+
 v1.0.7
 ------
 * force mount/umount even during dry-run

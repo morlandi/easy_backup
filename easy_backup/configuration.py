@@ -115,19 +115,31 @@ mailto=
 target_root=/mnt/backup/backups/{hostname}
 target_subfolder=daily
 
-#[run_before]
+[run_before]
+enabled=False
 #script_1=...
 #script_2=...
 
-#[run_after]
+[run_after]
+enabled=False
 #script_1=...
 #script_2=...
 
 [data_folders]
+# Suggested system folders to backup: /etc /srv /root /usr/local /var/mail /var/local /var/opt /var/log
 enabled=False
 include_1=/etc
-include_2=/home/*/www/
-include_3=/home/*/public/media
+include_2=/srv
+include_3=/root
+include_4=/usr/local
+include_5=/var/mail
+include_6=/var/local
+include_7=/var/opt
+include_8=/var/log
+include_9=/home/*/www/
+include_10=/home/*/public/media
+include_11=/home/*/protected
+include_12=/home/*/private
 exclude_1=/home/baduser/public/media
 
 [postgresql]

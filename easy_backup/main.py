@@ -283,7 +283,7 @@ def main():
 
     config = get_config()
 
-    if config.has_section('run_before'):
+    if config.has_section('run_before') and config.get_item_as_bool('run_before', 'enabled'):
         scripts = [value for key, value in get_config().items("run_before") if key.startswith('script_')]
         for script in scripts:
             logger.info('Running script: "%s"' % script)
@@ -301,7 +301,7 @@ def main():
     if config.get_item_as_bool('rotation', 'enabled', False):
         rotate_backups(get_args().dry_run)
 
-    if config.has_section('run_after'):
+    if config.has_section('run_after') and config.get_item_as_bool('run_after', 'enabled'):
         scripts = [value for key, value in get_config().items("run_after") if key.startswith('script_')]
         for script in scripts:
             logger.info('Running script: "%s"' % script)
