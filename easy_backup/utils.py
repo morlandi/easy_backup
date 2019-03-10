@@ -11,17 +11,17 @@ from .configuration import get_config
 logger = logging.getLogger("easy_backup")
 
 
-def run_command(command):
+def run_command(command, force=False, fail_silenty=False):
     success = True
     #interactive = not args.quiet
-    if get_args().dry_run:
+    if get_args().dry_run and not force:
         sys.stderr.write("\x1b[1;37;40m" + command + "\x1b[0m\n")
     else:
         # if interactive and not query_yes_no("Proceed ?"):
         #     raise Exception("Interrupted by user")
         logger.debug('Run command: "' + command + '"')
         rc = os.system(command)
-        if rc != 0:
+        if rc != 0 and not fail_silenty:
             logger.error('COMMAND FAILED: "' + command + '"')
             success = False
     return success
@@ -63,16 +63,16 @@ def fail(message):
     exit(-1)
 
 
-def mount(args):
+def mount():
     command = get_config().get_item('general', 'mount_command')
     if command:
-        return run_command(command)
+        return run_command(command, force=True)
     return True
 
-def umount():
+def umount(fail_silently=False):
     command = get_config().get_item('general', 'umount_command')
     if command:
-        return run_command(command)
+        return run_command(command, force=True, fail_silently=fail_silently)
     return True
 
 ################################################################################

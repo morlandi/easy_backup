@@ -269,8 +269,8 @@ def main():
     config_filename = os.path.abspath(args.config.strip())
     get_config().read_config_file(config_filename)
 
-    utils.umount()
-    if not utils.mount(args):
+    utils.umount(fail_silently=True)
+    if not utils.mount():
         utils.fail('Unable to mount')
 
     # Retrieve timestamp and target folder

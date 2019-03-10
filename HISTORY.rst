@@ -3,6 +3,10 @@
 History
 =======
 
+v1.0.7
+------
+* force mount/umount even during dry-run
+
 v1.0.6
 ------
 * print python version
