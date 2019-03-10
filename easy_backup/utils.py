@@ -11,7 +11,7 @@ from .configuration import get_config
 logger = logging.getLogger("easy_backup")
 
 
-def run_command(command, force=False, fail_silenty=False):
+def run_command(command, force=False, fail_silently=False):
     success = True
     #interactive = not args.quiet
     if get_args().dry_run and not force:
@@ -21,7 +21,7 @@ def run_command(command, force=False, fail_silenty=False):
         #     raise Exception("Interrupted by user")
         logger.debug('Run command: "' + command + '"')
         rc = os.system(command)
-        if rc != 0 and not fail_silenty:
+        if rc != 0 and not fail_silently:
             logger.error('COMMAND FAILED: "' + command + '"')
             success = False
     return success
