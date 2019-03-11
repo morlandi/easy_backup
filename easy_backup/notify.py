@@ -19,18 +19,23 @@ def escape(text):
 def notify_errors(command, e):
 
     title = mk_title('*** easy_backup failed with errors ***')
-    details = "ERROR: %s\n\n%s" % (str(e), traceback.format_exc())
+    details = "easy_backup ver. %s\n\nERROR: %s\n\n%s" % (
+        utils.get_version(),
+        str(e),
+        traceback.format_exc()
+    )
     command = command.format(
         title=escape(title),
         details=escape(details)
     )
-    utils.run_command(command)
+    utils.run_command(command, force=True, fail_silently=True)
 
 
 def notify_success(command):
     title = mk_title('easy_backup completed with no errors')
+    detail = "easy_backup ver. %s" % utils.get_version()
     command = command.format(
         title=escape(title),
-        details=escape(title)
+        details=escape(detail)
     )
-    utils.run_command(command)
+    utils.run_command(command, force=True, fail_silently=True)
