@@ -272,8 +272,9 @@ def work():
     logger.info("")
 
     utils.umount(fail_silently=True)
-    if not utils.mount():
-        raise Exception('Unable to mount')
+    # if not utils.mount():
+    #     raise Exception('Unable to mount')
+    utils.mount()
 
     # Retrieve timestamp and target folder
     timestamp = utils.timestamp()
@@ -326,4 +327,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

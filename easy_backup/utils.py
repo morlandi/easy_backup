@@ -22,8 +22,10 @@ def run_command(command, force=False, fail_silently=False):
         logger.debug('Run command: "' + command + '"')
         rc = os.system(command)
         if rc != 0 and not fail_silently:
-            logger.error('COMMAND FAILED: "' + command + '"')
-            success = False
+            message = 'COMMAND FAILED: "' + command + '"'
+            logger.error(message)
+            #success = False
+            raise Exception(message)
     return success
 
 
@@ -61,7 +63,6 @@ def get_version():
 def mount():
     command = get_config().get_item('general', 'mount_command')
     if command:
-        #raise Exception('boom')
         return run_command(command, force=True)
     return True
 
