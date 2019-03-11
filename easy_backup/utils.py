@@ -60,10 +60,10 @@ def get_version():
         return '???'
 
 
-def mount():
+def mount(fail_silently=False):
     command = get_config().get_item('general', 'mount_command')
     if command:
-        return run_command(command, force=True)
+        return run_command(command, force=True, fail_silently=fail_silently)
     return True
 
 
