@@ -274,7 +274,7 @@ def work():
     utils.umount(fail_silently=True)
     # if not utils.mount():
     #     raise Exception('Unable to mount')
-    utils.mount()
+    utils.mount(fail_silently=True)
 
     # Retrieve timestamp and target folder
     timestamp = utils.timestamp()
