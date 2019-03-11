@@ -10,6 +10,7 @@ import argparse
 import glob
 import subprocess
 import traceback
+import datetime
 
 from .args import get_args, set_args
 from .configuration import get_config
@@ -315,14 +316,15 @@ def work():
 
 def main():
     try:
+        started = datetime.datetime.now()
         work()
         command = get_config().get_item("general", "on_success", default='')
         if command:
-            notify.notify_success(command)
+            notify.notify_success(started, command)
     except Exception as e:
         command = get_config().get_item("general", "on_errors", default='')
         if command:
-            notify.notify_errors(command, e)
+            notify.notify_errors(started, command, e)
 
 
 if __name__ == "__main__":

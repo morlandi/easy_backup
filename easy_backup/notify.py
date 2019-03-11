@@ -12,15 +12,24 @@ def mk_title(title):
     )
 
 
+def mk_header(started, completed):
+    header = "easy_backup v%s - started: %s, completed: %s" % (
+        utils.get_version(),
+        str(started),
+        str(completed),
+    )
+    return header
+
+
 def escape(text):
     return text.replace('"', '\"')
 
 
-def notify_errors(command, e):
+def notify_errors(started, command, e):
 
     title = mk_title('*** easy_backup failed with errors ***')
-    details = "easy_backup ver. %s\n\nERROR: %s\n\n%s" % (
-        utils.get_version(),
+    details = "%s\n\nERROR: %s\n\n%s" % (
+        mk_header(started, datetime.datetime.now()),
         str(e),
         traceback.format_exc()
     )
@@ -31,11 +40,11 @@ def notify_errors(command, e):
     utils.run_command(command, force=True, fail_silently=True)
 
 
-def notify_success(command):
+def notify_success(started, command):
     title = mk_title('easy_backup completed with no errors')
-    detail = "easy_backup ver. %s\n\nNo errors" % utils.get_version()
+    details = "%s\n\nNo errors" % mk_header(started, datetime.datetime.now())
     command = command.format(
         title=escape(title),
-        details=escape(detail)
+        details=escape(details)
     )
     utils.run_command(command, force=True, fail_silently=True)

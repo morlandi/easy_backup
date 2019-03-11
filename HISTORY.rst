@@ -3,6 +3,10 @@
 History
 =======
 
+v1.1.1
+------
+* add started and completed datetime to notification massages
+
 v1.1.0
 ------
 * always raise exception on command failure

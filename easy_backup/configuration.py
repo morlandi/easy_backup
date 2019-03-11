@@ -147,7 +147,7 @@ exclude_1=/home/baduser/public/media
 enabled=True
 root_user=postgres
 vacuumdb=True
-exclude_1=db_wrong_1
+exclude_1=template0
 exclude_2=db_wrong_2
 
 [mysql]
