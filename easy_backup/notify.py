@@ -33,7 +33,7 @@ def notify_errors(command, e):
 
 def notify_success(command):
     title = mk_title('easy_backup completed with no errors')
-    detail = "easy_backup ver. %s" % utils.get_version()
+    detail = "easy_backup ver. %s\n\nNo errors" % utils.get_version()
     command = command.format(
         title=escape(title),
         details=escape(detail)
