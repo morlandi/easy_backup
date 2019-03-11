@@ -66,14 +66,17 @@ def fail(message):
 def mount():
     command = get_config().get_item('general', 'mount_command')
     if command:
+        #raise Exception('boom')
         return run_command(command, force=True)
     return True
+
 
 def umount(fail_silently=False):
     command = get_config().get_item('general', 'umount_command')
     if command:
         return run_command(command, force=True, fail_silently=fail_silently)
     return True
+
 
 ################################################################################
 

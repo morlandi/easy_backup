@@ -111,7 +111,8 @@ DEFAULT_CONFIG_FILE = """
 [general]
 mount_command=mount.cifs -o user=uXXXXXX,pass=YYYYYYYYYYYYYYYY //uXXXXXX.your-storagebox/backup /mnt/backup
 umount_command=umount /mnt/backup
-mailto=
+#on_errors=echo "{details}" | mail -s'{title}' testuser@somewhere.com
+#on_success=echo "{details}" | mail -s'{title}' testuser@somewhere.com
 target_root=/mnt/backup/backups/{hostname}
 target_subfolder=daily
 

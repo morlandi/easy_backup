@@ -9,11 +9,13 @@ import logging
 import argparse
 import glob
 import subprocess
+import traceback
 
 from .args import get_args, set_args
 from .configuration import get_config
 from .rotate_files import rotate_all
 from . import utils
+from . import notify
 
 
 logger = logging.getLogger("easy_backup")
@@ -238,7 +240,7 @@ def run_script(script):
     logger.info('Running script: "%s"' % script)
 
 
-def main():
+def work():
 
     #
     # Parse command line
@@ -261,13 +263,13 @@ def main():
     set_args(parser.parse_args())
     args = get_args()
 
-    # Setup logger
-    utils.setup_logger(logger, args.verbosity)
-    logger.info("")
-
     # Read config. file
     config_filename = os.path.abspath(args.config.strip())
     get_config().read_config_file(config_filename)
+
+    # Setup logger
+    utils.setup_logger(logger, args.verbosity)
+    logger.info("")
 
     utils.umount(fail_silently=True)
     if not utils.mount():
@@ -308,6 +310,18 @@ def main():
             utils.run_command(script)
 
     utils.umount()
+
+
+def main():
+    try:
+        work()
+        command = get_config().get_item("general", "on_success", default='')
+        if command:
+            notify.notify_success(command)
+    except Exception as e:
+        command = get_config().get_item("general", "on_errors", default='')
+        if command:
+            notify.notify_errors(command, e)
 
 
 if __name__ == "__main__":
