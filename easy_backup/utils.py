@@ -58,11 +58,6 @@ def get_version():
         return '???'
 
 
-def fail(message):
-    logger.error(message)
-    exit(-1)
-
-
 def mount():
     command = get_config().get_item('general', 'mount_command')
     if command:

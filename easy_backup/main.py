@@ -273,14 +273,14 @@ def work():
 
     utils.umount(fail_silently=True)
     if not utils.mount():
-        utils.fail('Unable to mount')
+        raise Exception('Unable to mount')
 
     # Retrieve timestamp and target folder
     timestamp = utils.timestamp()
     logger.info('Timestamp: "%s"' % utils.timestamp_to_string(timestamp))
     target_folder = utils.get_target_folder(include_target_subfolder=True)
     if not utils.assure_path_exists(target_folder):
-        utils.fail('Target folder "%s" not found' % target_folder)
+        raise Exception('Target folder "%s" not found' % target_folder)
     logger.info('Target folder: "%s"' % target_folder)
 
     config = get_config()
