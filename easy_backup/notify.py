@@ -18,8 +18,8 @@ def escape(text):
 
 def notify_errors(command, e):
 
-    title = mk_title('easy_backup failed with error: "%s"' % str(e))
-    details = traceback.format_exc()
+    title = mk_title('*** easy_backup failed with errors ***')
+    details = "ERROR: %s\n\n%s" % (str(e), traceback.format_exc())
     command = command.format(
         title=escape(title),
         details=escape(details)
