@@ -3,6 +3,12 @@
 History
 =======
 
+v1.1.0
+------
+* always raise exception on command failure
+* optionally send notifications after failure and/or success
+* fail silently on mount failure
+
 v1.0.8
 ------
 * update default config file
