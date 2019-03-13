@@ -129,18 +129,10 @@ enabled=False
 [data_folders]
 # Suggested system folders to backup: /etc /srv /root /usr/local /var/mail /var/local /var/opt /var/log
 enabled=False
-include_1=/etc
-include_2=/srv
-include_3=/root
-include_4=/usr/local
-include_5=/var/mail
-include_6=/var/local
-include_7=/var/opt
-include_8=/var/log
-include_9=/home/*/www/
-include_10=/home/*/public/media
-include_11=/home/*/protected
-include_12=/home/*/private
+include_1=/home/*/www/
+include_2=/home/*/public/media
+include_3=/home/*/protected
+include_4=/home/*/private
 exclude_1=/home/baduser/public/media
 
 [postgresql]

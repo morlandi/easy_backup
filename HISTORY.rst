@@ -3,6 +3,10 @@
 History
 =======
 
+v1.1.2
+------
+* default config file revised
+
 v1.1.1
 ------
 * add started and completed datetime to notification massages
