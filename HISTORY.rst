@@ -3,6 +3,11 @@
 History
 =======
 
+v1.2.0
+------
+* Optionally include a report of available backup files list in notification email
+* Collect errors and run backup procedure to complation anyhow
+
 v1.1.2
 ------
 * default config file revised
