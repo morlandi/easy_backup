@@ -5,14 +5,30 @@ import datetime
 import time
 import socket
 import platform
+import traceback
 from .args import get_args
 from .configuration import get_config
 
 logger = logging.getLogger("easy_backup")
 
+RUN_COMMAND_ERRORS = []
 
-def run_command(command, force=False, fail_silently=False):
-    success = True
+
+def run_command(command, force=False, fail_silently=True):
+    try:
+        do_run_command(command, force=force)
+    except Exception as e:
+        if fail_silently:
+            RUN_COMMAND_ERRORS.append({
+                'message': str(e),
+                'traceback': traceback.format_exc(),
+            })
+        else:
+            raise
+    return
+
+
+def do_run_command(command, force=False):
     #interactive = not args.quiet
     if get_args().dry_run and not force:
         sys.stderr.write("\x1b[1;37;40m" + command + "\x1b[0m\n")
@@ -21,12 +37,11 @@ def run_command(command, force=False, fail_silently=False):
         #     raise Exception("Interrupted by user")
         logger.debug('Run command: "' + command + '"')
         rc = os.system(command)
-        if rc != 0 and not fail_silently:
+        if rc != 0:
             message = 'COMMAND FAILED: "' + command + '"'
             logger.error(message)
-            #success = False
             raise Exception(message)
-    return success
+    return
 
 
 def setup_logger(logger, verbosity):

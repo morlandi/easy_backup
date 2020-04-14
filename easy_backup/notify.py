@@ -25,19 +25,23 @@ def escape(text):
     return text.replace('"', '\"')
 
 
-def notify_errors(started, command, e):
+from .utils import RUN_COMMAND_ERRORS
+
+def notify_errors(started, command):
 
     title = mk_title('*** easy_backup failed with errors ***')
-    details = "%s\n\nERROR: %s\n\n%s" % (
+    details = "%s\n\nERRORS:\n" % (
         mk_header(started, datetime.datetime.now()),
-        str(e),
-        traceback.format_exc()
     )
+    for error in RUN_COMMAND_ERRORS:
+        details += error['message'] + "\n"
+        details += error['traceback'] + "\n"
+
     command = command.format(
         title=escape(title),
         details=escape(details)
     )
-    utils.run_command(command, force=True, fail_silently=True)
+    utils.run_command(command, force=True)
 
 
 def notify_success(started, command):
@@ -47,4 +51,4 @@ def notify_success(started, command):
         title=escape(title),
         details=escape(details)
     )
-    utils.run_command(command, force=True, fail_silently=True)
+    utils.run_command(command, force=True)

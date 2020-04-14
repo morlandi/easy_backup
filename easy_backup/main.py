@@ -314,17 +314,40 @@ def work():
     utils.umount()
 
 
+from .utils import RUN_COMMAND_ERRORS
+
 def main():
+    # try:
+    #     started = datetime.datetime.now()
+    #     work()
+    #     command = get_config().get_item("general", "on_success", default='')
+    #     if command:
+    #         notify.notify_success(started, command)
+    # except Exception as e:
+    #     command = get_config().get_item("general", "on_errors", default='')
+    #     if command:
+    #         notify.notify_errors(started, command, e)
+
     try:
         started = datetime.datetime.now()
         work()
+    except Exception as e:
+        RUN_COMMAND_ERRORS.append({
+            'message': str(e),
+            'traceback': traceback.format_exc(),
+        })
+
+    if len(RUN_COMMAND_ERRORS) <= 0:
+        # Notify success
         command = get_config().get_item("general", "on_success", default='')
         if command:
             notify.notify_success(started, command)
-    except Exception as e:
+    else:
+        # Notify errors
         command = get_config().get_item("general", "on_errors", default='')
         if command:
-            notify.notify_errors(started, command, e)
+            notify.notify_errors(started, command)
+
 
 
 if __name__ == "__main__":
