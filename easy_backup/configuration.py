@@ -113,6 +113,7 @@ mount_command=mount.cifs -o user=uXXXXXX,pass=YYYYYYYYYYYYYYYY //uXXXXXX.your-st
 umount_command=umount /mnt/backup
 #on_errors=echo "{details}" | mail -s'{title}' testuser@somewhere.com
 #on_success=echo "{details}" | mail -s'{title}' testuser@somewhere.com
+report_backup_files_list=False
 target_root=/mnt/backup/backups/{hostname}
 target_subfolder=daily
 

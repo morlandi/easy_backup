@@ -337,16 +337,18 @@ def main():
             'traceback': traceback.format_exc(),
         })
 
+    report_backup_files_list = get_config().get_item("general", "report_backup_files_list", default=False)
+    target_root = get_config().get_item("general", "target_root")
     if len(RUN_COMMAND_ERRORS) <= 0:
         # Notify success
         command = get_config().get_item("general", "on_success", default='')
         if command:
-            notify.notify_success(started, command)
+            notify.notify_success(started, command, report_backup_files_list, target_root)
     else:
         # Notify errors
         command = get_config().get_item("general", "on_errors", default='')
         if command:
-            notify.notify_errors(started, command)
+            notify.notify_errors(started, command, report_backup_files_list, target_root)
 
 
 
