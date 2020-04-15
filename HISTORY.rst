@@ -3,6 +3,10 @@
 History
 =======
 
+v1.2.3
+------
+* Fix backup files list report
+
 v1.2.2
 ------
 * Better backup file list reporting

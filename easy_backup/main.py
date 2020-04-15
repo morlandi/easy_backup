@@ -333,7 +333,7 @@ def work(started):
             utils.run_command(script)
 
     # Send nofitication about activities
-    report_backup_files_list = get_config().get_item("general", "report_backup_files_list", default=False)
+    report_backup_files_list = get_config().get_item_as_bool("general", "report_backup_files_list", default=False)
     if report_backup_files_list:
         backup_file_list = list_backup_files()
     else:
