@@ -17,6 +17,7 @@ from .configuration import get_config
 from .rotate_files import rotate_all
 from . import utils
 from . import notify
+from .utils import ERRORS_LIST
 
 
 logger = logging.getLogger("easy_backup")
@@ -241,7 +242,7 @@ def run_script(script):
     logger.info('Running script: "%s"' % script)
 
 
-def work():
+def work(started):
 
     #
     # Parse command line
@@ -273,9 +274,7 @@ def work():
     logger.info("")
 
     utils.umount(fail_silently=True)
-    # if not utils.mount():
-    #     raise Exception('Unable to mount')
-    utils.mount(fail_silently=True)
+    utils.mount(fail_silently=False)
 
     # Retrieve timestamp and target folder
     timestamp = utils.timestamp()
@@ -287,12 +286,14 @@ def work():
 
     config = get_config()
 
+    # Run actions before backup
     if config.has_section('run_before') and config.get_item_as_bool('run_before', 'enabled'):
         scripts = [value for key, value in get_config().items("run_before") if key.startswith('script_')]
         for script in scripts:
             logger.info('Running script: "%s"' % script)
             utils.run_command(script)
 
+    # Backup data and databases
     if config.get_item_as_bool('data_folders', 'enabled', False):
         backup_data_folders(timestamp, target_folder)
 
@@ -302,44 +303,21 @@ def work():
     if config.get_item_as_bool('mysql', 'enabled', False):
         backup_mysql_databases(timestamp, target_folder)
 
+    # Rotate backups
     if config.get_item_as_bool('rotation', 'enabled', False):
         rotate_backups(get_args().dry_run)
 
+    # Run actions after backup
     if config.has_section('run_after') and config.get_item_as_bool('run_after', 'enabled'):
         scripts = [value for key, value in get_config().items("run_after") if key.startswith('script_')]
         for script in scripts:
             logger.info('Running script: "%s"' % script)
             utils.run_command(script)
 
-    utils.umount()
-
-
-from .utils import RUN_COMMAND_ERRORS
-
-def main():
-    # try:
-    #     started = datetime.datetime.now()
-    #     work()
-    #     command = get_config().get_item("general", "on_success", default='')
-    #     if command:
-    #         notify.notify_success(started, command)
-    # except Exception as e:
-    #     command = get_config().get_item("general", "on_errors", default='')
-    #     if command:
-    #         notify.notify_errors(started, command, e)
-
-    try:
-        started = datetime.datetime.now()
-        work()
-    except Exception as e:
-        RUN_COMMAND_ERRORS.append({
-            'message': str(e),
-            'traceback': traceback.format_exc(),
-        })
-
+    # Send nofitication about activities
     report_backup_files_list = get_config().get_item("general", "report_backup_files_list", default=False)
     target_root = get_config().get_item("general", "target_root")
-    if len(RUN_COMMAND_ERRORS) <= 0:
+    if len(ERRORS_LIST) <= 0:
         # Notify success
         command = get_config().get_item("general", "on_success", default='')
         if command:
@@ -350,7 +328,23 @@ def main():
         if command:
             notify.notify_errors(started, command, report_backup_files_list, target_root)
 
+    utils.umount(fail_silently=False)
 
+
+def main():
+    try:
+        started = datetime.datetime.now()
+        work(started)
+    except Exception as e:
+        logger.error(str(e))
+        logger.error(traceback.format_exc())
+        ERRORS_LIST.append({
+            'message': str(e),
+            'traceback': traceback.format_exc(),
+        })
+        command = get_config().get_item("general", "on_errors", default='')
+        if command:
+            notify.notify_errors(started, command, False, None)
 
 if __name__ == "__main__":
     main()

@@ -11,7 +11,7 @@ from .configuration import get_config
 
 logger = logging.getLogger("easy_backup")
 
-RUN_COMMAND_ERRORS = []
+ERRORS_LIST = []
 
 
 def run_command(command, force=False, fail_silently=True):
@@ -19,7 +19,7 @@ def run_command(command, force=False, fail_silently=True):
         do_run_command(command, force=force)
     except Exception as e:
         if fail_silently:
-            RUN_COMMAND_ERRORS.append({
+            ERRORS_LIST.append({
                 'message': str(e),
                 'traceback': traceback.format_exc(),
             })
@@ -75,14 +75,14 @@ def get_version():
         return '???'
 
 
-def mount(fail_silently=False):
+def mount(fail_silently):
     command = get_config().get_item('general', 'mount_command')
     if command:
         return run_command(command, force=True, fail_silently=fail_silently)
     return True
 
 
-def umount(fail_silently=False):
+def umount(fail_silently):
     command = get_config().get_item('general', 'umount_command')
     if command:
         return run_command(command, force=True, fail_silently=fail_silently)

@@ -3,6 +3,10 @@
 History
 =======
 
+v1.2.1
+------
+* Better error handling when mount fails
+
 v1.2.0
 ------
 * Optionally include a report of available backup files list in notification email

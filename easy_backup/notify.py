@@ -4,7 +4,7 @@ import datetime
 import os
 from . import utils
 from .file_tree_maker import FileTreeMaker
-from .utils import RUN_COMMAND_ERRORS
+from .utils import ERRORS_LIST
 
 
 def mk_title(title):
@@ -34,7 +34,7 @@ def notify_errors(started, command, report_backup_files_list, target_root):
     details = "%s\n\nERRORS:\n" % (
         mk_header(started, datetime.datetime.now()),
     )
-    for error in RUN_COMMAND_ERRORS:
+    for error in ERRORS_LIST:
         details += error['message'] + "\n"
         details += error['traceback'] + "\n"
 
