@@ -3,6 +3,10 @@
 History
 =======
 
+v1.2.2
+------
+* Better backup file list reporting
+
 v1.2.1
 ------
 * Better error handling when mount fails

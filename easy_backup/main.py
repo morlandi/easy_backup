@@ -228,6 +228,17 @@ def rotate_backups(dry_run):
     logger.info('*** rotate_backups() end')
 
 
+def list_backup_files():
+    text = utils.dump_backup_files(
+        target_folder=utils.get_target_folder(include_target_subfolder=False),
+        daily=get_config().get_item('rotation', 'daily'),
+        weekly=get_config().get_item('rotation', 'weekly'),
+        monthly=get_config().get_item('rotation', 'monthly'),
+        yearly=get_config().get_item('rotation', 'yearly'),
+        quarantine=get_config().get_item('rotation', 'quarantine'),
+    )
+    return text
+
 ################################################################################
 
 class CommandLineParser(argparse.ArgumentParser):
@@ -273,7 +284,14 @@ def work(started):
     utils.setup_logger(logger, args.verbosity)
     logger.info("")
 
+    # This is redundand and should fail
     utils.umount(fail_silently=True)
+
+    # Since we're not interested in reporting this umount error, here
+    # we reset the list of errors
+    ERRORS_LIST = []
+
+    # Mount backup unit
     utils.mount(fail_silently=False)
 
     # Retrieve timestamp and target folder
@@ -316,18 +334,24 @@ def work(started):
 
     # Send nofitication about activities
     report_backup_files_list = get_config().get_item("general", "report_backup_files_list", default=False)
+    if report_backup_files_list:
+        backup_file_list = list_backup_files()
+    else:
+        backup_file_list = None
+
     target_root = get_config().get_item("general", "target_root")
     if len(ERRORS_LIST) <= 0:
         # Notify success
         command = get_config().get_item("general", "on_success", default='')
         if command:
-            notify.notify_success(started, command, report_backup_files_list, target_root)
+            notify.notify_success(started, command, backup_file_list)
     else:
         # Notify errors
         command = get_config().get_item("general", "on_errors", default='')
         if command:
-            notify.notify_errors(started, command, report_backup_files_list, target_root)
+            notify.notify_errors(started, command, backup_file_list)
 
+    # Unmount backup unit
     utils.umount(fail_silently=False)
 
 
@@ -344,7 +368,7 @@ def main():
         })
         command = get_config().get_item("general", "on_errors", default='')
         if command:
-            notify.notify_errors(started, command, False, None)
+            notify.notify_errors(started, command, None)
 
 if __name__ == "__main__":
     main()

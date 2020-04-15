@@ -3,7 +3,6 @@ import socket
 import datetime
 import os
 from . import utils
-from .file_tree_maker import FileTreeMaker
 from .utils import ERRORS_LIST
 
 
@@ -28,7 +27,7 @@ def escape(text):
     return text.replace('"', '\"')
 
 
-def notify_errors(started, command, report_backup_files_list, target_root):
+def notify_errors(started, command, backup_file_list):
 
     title = mk_title('*** easy_backup failed with errors ***')
     details = "%s\n\nERRORS:\n" % (
@@ -38,9 +37,9 @@ def notify_errors(started, command, report_backup_files_list, target_root):
         details += error['message'] + "\n"
         details += error['traceback'] + "\n"
 
-    if report_backup_files_list:
+    if backup_file_list is not None:
         details += "\n\nAvailable backup files:\n"
-        details += FileTreeMaker().make(target_root)
+        details += backup_file_list
 
     command = command.format(
         title=escape(title),
@@ -49,12 +48,14 @@ def notify_errors(started, command, report_backup_files_list, target_root):
     utils.run_command(command, force=True)
 
 
-def notify_success(started, command, report_backup_files_list, target_root):
+def notify_success(started, command, backup_file_list):
     title = mk_title('easy_backup completed with no errors')
     details = "%s\n\nNo errors" % mk_header(started, datetime.datetime.now())
-    if report_backup_files_list:
+
+    if backup_file_list is not None:
         details += "\n\nAvailable backup files:\n"
-        details += FileTreeMaker().make(target_root)
+        details += backup_file_list
+
     command = command.format(
         title=escape(title),
         details=escape(details)

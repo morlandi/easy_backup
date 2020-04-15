@@ -145,3 +145,58 @@ def output_filepath(target_folder, timestamp, filename):
     )
 
 
+def sizeof_fmt(num, suffix='B'):
+    """Readable file size
+    :param num: Bytes value
+    :type num: int
+    :param suffix: Unit suffix (optionnal) default = B
+    :type suffix: str
+    :rtype: str
+    """
+    for unit in ['', 'k', 'M', 'G', 'T', 'P', 'E', 'Z']:
+        if abs(num) < 1024.0:
+            return "%3.1f %s%s" % (num, unit, suffix)
+        num /= 1024.0
+    return "%.1f%s%s" % (num, 'Yi', suffix)
+
+
+def dump_backup_files(target_folder, daily, weekly, monthly, yearly, quarantine):
+
+    def list_files(root, buffer):
+        """
+        - list files in "root" folder
+        - appand the sorted list of files into buffer[]
+        - returns (num_files, total_size_in_bytes)
+        """
+        files = sorted(os.listdir(root))
+        n = len(files)
+        total_size_in_bytes = 0
+        for i, file in enumerate(files):
+            prefix = " ┃   ┣━━ " if (i < n - 1) else " ┃   ┗━━ "
+            file_size = os.path.getsize(os.path.join(root, file))
+            total_size_in_bytes += file_size
+            line = "%s%s (%s)" % (prefix, file, sizeof_fmt(file_size))
+            buffer.append(line)
+        return n, total_size_in_bytes
+
+    buffer = []
+    path_parts = target_folder.rsplit(os.path.sep, 1)
+    buffer.append("[%s]" % (path_parts[-1],))
+
+    files_counter = 0
+    total_size = 0
+
+    for i, subfolder in enumerate([daily, weekly, monthly, yearly, quarantine, ]):
+        prefix = " ┣━━" if i < 4 else " ┗━━"
+        buffer.append("%s[%s]" % (prefix, subfolder))
+        n, s = list_files(os.path.join(target_folder, subfolder), buffer)
+        files_counter += n
+        total_size += s
+
+    buffer.append('Files: %d' % files_counter)
+    buffer.append('Size: %s' % sizeof_fmt(total_size))
+
+    text = "\n".join(buffer)
+    return text
+
+
