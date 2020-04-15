@@ -173,7 +173,7 @@ def dump_backup_files(target_folder, daily, weekly, monthly, yearly, quarantine)
         n = len(files)
         total_size_in_bytes = 0
         for i, file in enumerate(files):
-            prefix = file_prefix + ("┣━━ " if (i < n - 1) else "┗━━ ")
+            prefix = file_prefix + ("├── " if (i < n - 1) else "└── ")
             file_size = os.path.getsize(os.path.join(root, file))
             total_size_in_bytes += file_size
             line = "%s%s (%s)" % (prefix, file, sizeof_fmt(file_size))
@@ -188,13 +188,12 @@ def dump_backup_files(target_folder, daily, weekly, monthly, yearly, quarantine)
     total_size = 0
 
     for i, subfolder in enumerate([daily, weekly, monthly, yearly, quarantine, ]):
-        prefix = " ┣━━" if i < 4 else " ┗━━"
-        file_prefix = " ┃   " if i < 4 else "     "
+        prefix = " ├──" if i < 4 else " └──"
+        file_prefix = " │   " if i < 4 else "     "
         buffer.append("%s[%s]" % (prefix, subfolder))
         n, s = list_files(os.path.join(target_folder, subfolder), file_prefix, buffer)
         files_counter += n
         total_size += s
-
     buffer.append('Files: %d' % files_counter)
     buffer.append('Size: %s' % sizeof_fmt(total_size))
 
