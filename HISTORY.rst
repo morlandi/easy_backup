@@ -3,6 +3,14 @@
 History
 =======
 
+v1.2.5
+------
+* use only Ascii chars
+
+v1.2.4
+------
+* replace graphic lines
+
 v1.2.3
 ------
 * Fix backup files list report
